@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>iot-platform-common</artifactId>
+        <groupId>com.cpiinfo.iot</groupId>
+        <version>1.2.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>iot-platform-common-mybatis</artifactId>
+    <name>iot-platform-common-mybatis</name>
+    <packaging>jar</packaging>
+    <description>mybatis相关工具</description>
+    <properties>
+        <!--数据库连接池-->
+        <druid.version>1.1.14</druid.version>
+        <!--mysql驱动包-->
+        <mysql.version>8.0.19</mysql.version>
+        <!--sql server-->
+        <sqlserver.version>4.0</sqlserver.version>
+        <!--oracle-->
+        <oracle.version>11.2.0.3</oracle.version>
+    </properties>
+
+    <dependencies>
+        <!--该依赖放在iot-platform-common-tools中引入-->
+        <dependency>
+            <groupId>com.cpiinfo.iot</groupId>
+            <artifactId>iot-platform-common-tools</artifactId>
+            <version>${iot-platform.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
+        <!--mysql驱动-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
+        </dependency>
+        <!--oracle驱动-->
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>${oracle.version}</version>
+        </dependency>
+        <!--sqlserver驱动-->
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>sqljdbc4</artifactId>
+            <version>${sqlserver.version}</version>
+        </dependency>
+        <!--postgresql驱动-->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

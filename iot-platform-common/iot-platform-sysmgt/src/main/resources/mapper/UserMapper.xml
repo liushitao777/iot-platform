@@ -1,0 +1,734 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cpiinfo.sysmgt.dao.UserMapper">
+	<resultMap id="BaseResultMap" type="com.cpiinfo.sysmgt.entity.User">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="user_code" property="userCode" jdbcType="VARCHAR" />
+		<result column="user_name" property="username" jdbcType="VARCHAR" />
+		<result column="user_pwd" property="userpwd" jdbcType="VARCHAR" />
+		<result column="md5_pwd" property="md5Pwd" jdbcType="VARCHAR" />
+		<result column="sex" property="sex" jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="user_type" property="userType" jdbcType="VARCHAR" />
+		<result column="unit" property="unit" jdbcType="VARCHAR" />
+		<result column="unit_code" property="unitCode" jdbcType="VARCHAR" />
+		<result column="unit_id" property="unitId" jdbcType="VARCHAR" />
+		<result column="depart_id" property="departId" jdbcType="VARCHAR" />
+		<result column="duties" property="duties" jdbcType="VARCHAR" />
+		<result column="postscript" property="postscript" jdbcType="VARCHAR" />
+		<result column="s_state" property="state" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP"  />
+		<result column="login_type" property="loginType" jdbcType="VARCHAR"  />
+		<result column="fails_count" property="failsCount" jdbcType="INTEGER"  />
+		<result column="active" property="active"  jdbcType="VARCHAR" />
+		<result column="last_change_password" property="lastChangePassword"  jdbcType="TIMESTAMP" />
+		<result column="lock_end_time" property="lockEndTime" jdbcType="TIMESTAMP"  />
+		<result column="is_first_login" property="isFirstLogin" jdbcType="VARCHAR"  />
+		<result column="maker_password" property="makerPassword"  jdbcType="VARCHAR" />
+		<result column="maker_user_id" property="makeruserId" jdbcType="VARCHAR"  />
+		<result column="total_login_time" property="totalLoginTime" jdbcType="BIGINT"  />
+		<result column="last_login_time" property="lastLoginTime" jdbcType="TIMESTAMP"  />
+	</resultMap>
+	<resultMap id="UserForIMDGMap"
+		type="com.cpiinfo.sysmgt.entity.UserForIMDG">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="user_code" property="userCode" jdbcType="VARCHAR" />
+		<result column="user_name" property="username" jdbcType="VARCHAR" />
+		<result column="user_pwd" property="userpwd" jdbcType="VARCHAR" />
+		<result column="sex" property="sex" jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="user_type" property="userType" jdbcType="VARCHAR" />
+		<result column="unit" property="unit" jdbcType="VARCHAR" />
+		<result column="unit_code" property="unitCode" jdbcType="VARCHAR" />
+		<result column="unit_id" property="unitId" jdbcType="VARCHAR" />
+		<result column="duties" property="duties" jdbcType="VARCHAR" />
+		<result column="s_state" property="state" jdbcType="VARCHAR" />
+		<result column="short_code" property="shortCode" jdbcType="VARCHAR" />
+		<result column="l_level" property="level" jdbcType="VARCHAR" />
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="departUser"
+		type="com.cpiinfo.sysmgt.entity.DepartUser">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="DEPART_ID" property="departId" jdbcType="VARCHAR" />
+		<result column="USER_ID" property="userId" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="ResultOfInteger" type="java.lang.Integer">  
+	    <result column="budget" property="budget" jdbcType="INTEGER" />  
+	</resultMap> 
+	<!-- 添加用户 -->
+	<insert id="addUser" parameterType="com.cpiinfo.sysmgt.entity.User">
+		insert into
+		sys_user(id,user_code,user_name,user_pwd,sex,phone,email,user_type,duties,s_state,unit,unit_id,depart_id,unit_code,postscript,update_time,last_change_password,maker_password,md5_pwd)
+		values(#{id},
+		#{userCode}, #{username}, #{userpwd}, #{sex}, #{phone},
+		#{email},#{userType},
+		#{duties}, #{state} ,#{unit},#{unitId},#{departId},#{unitCode},#{postscript},#{updateTime},#{lastChangePassword},#{makerPassword},#{md5Pwd})
+	</insert>
+	<select id="reloadFailsCount">
+		update sys_user set fails_count=0
+	</select>
+	
+	<!-- 添加部门用户关联 -->
+	<insert id="addDepartUser" parameterType="com.cpiinfo.sysmgt.entity.DepartUser">
+		insert into
+		sys_depart_user(ID, DEPART_ID, USER_ID)
+		values(#{id}, #{departId}, #{userId})
+	</insert>
+
+	<select id="selectDepartUserRelation" parameterType="com.cpiinfo.sysmgt.entity.DepartUser" resultMap="departUser">
+		select * from sys_depart_user where DEPART_ID = #{departId} and USER_ID = #{userId}
+	</select>
+
+	<!-- 批量导入用户 -->
+<!-- 	<insert id="importSaveUser" parameterType="java.util.List">
+		BEGIN
+		<foreach collection="list" item="item" index="index"
+			separator=";">
+			insert into jyspsc_sys_user(id, user_code, user_name, user_pwd, sex,
+		phone, email, user_type, unit, unit_code, unit_id, duties, s_state)
+		values
+			(#{item.id, jdbcType=VARCHAR},
+			#{item.userCode,
+			jdbcType=VARCHAR},
+			#{item.username, jdbcType=VARCHAR},
+			#{item.userpwd,
+			jdbcType=VARCHAR},
+			#{item.sex, jdbcType=VARCHAR},
+			#{item.phone,
+			jdbcType=VARCHAR},
+			#{item.email, jdbcType=VARCHAR},
+			#{item.userType,
+			jdbcType=VARCHAR},
+			#{item.unit, jdbcType=VARCHAR},
+			#{item.unitCode,
+			jdbcType=VARCHAR},
+			#{item.unitId, jdbcType=VARCHAR},
+			#{item.duties,
+			jdbcType=VARCHAR}, 1)
+		</foreach>
+		;END;
+	</insert> -->
+	
+	<insert id="importSaveUser" parameterType="java.util.List">
+			insert into sys_user(id, user_code, user_name, user_pwd, sex,
+		phone, email, user_type, unit, unit_code, unit_id, duties, s_state)
+		<foreach collection="list" item="item" index="index"
+			separator="union all">
+			select #{item.id, jdbcType=VARCHAR},
+			#{item.userCode,
+			jdbcType=VARCHAR},
+			#{item.username, jdbcType=VARCHAR},
+			#{item.userpwd,
+			jdbcType=VARCHAR},
+			#{item.sex, jdbcType=VARCHAR},
+			#{item.phone,
+			jdbcType=VARCHAR},
+			#{item.email, jdbcType=VARCHAR},
+			#{item.userType,
+			jdbcType=VARCHAR},
+			#{item.unit, jdbcType=VARCHAR},
+			#{item.unitCode,
+			jdbcType=VARCHAR},
+			#{item.unitId, jdbcType=VARCHAR},
+			#{item.duties,
+			jdbcType=VARCHAR}, 1 from dual
+		</foreach>
+	</insert>
+
+	<!-- 根据id查询用户信息 -->
+	<select id="queryUserById" parameterType="String" resultMap="BaseResultMap">
+		select * from sys_user where id = #{id} and s_state != '2'
+	</select>
+
+	<!-- 根据code查询用户信息 -->
+	<select id="queryUserById1" parameterType="String" resultMap="BaseResultMap">
+		select * from sys_user where user_code = #{userId} and s_state != '2'
+	</select>
+
+	<!-- 根据用户编码查询用户信息 -->
+	<select id="queryUserByCode" parameterType="String" resultMap="BaseResultMap">
+		select * from sys_user where user_code = #{userCode} and
+		s_state != '2'
+	</select>
+
+
+	<select id="queryMobileUserByuserName" parameterType="String" resultMap="BaseResultMap">
+	SELECT *  from (
+	select u.user_code,u.user_pwd,u.user_name,u.s_state,u.user_type,'inner' as login_type,0 as total_login_time ,now() as last_login_time from sys_user u
+	union
+	select sp.p_code as user_code,sp.system_password as user_pwd,sp.full_name as user_name,sp.state as s_state,sp.user_type,'outer' as login_type,total_login_time,last_login_time from security_personnel_base sp  )
+	t3 where  t3.user_code = #{userName} and
+		t3.s_state != '2'
+
+	</select>
+	
+	<!-- 根据用户编码查询用户信息 -->
+	<select id="queryUserByCodeAndPass" parameterType="com.cpiinfo.sysmgt.entity.User" resultMap="BaseResultMap">
+		select * from sys_user where user_code = #{userCode} and USER_PWD = #{userpwd} and
+		s_state != '2'
+	</select>
+
+	<!-- 修改用户信息 -->
+	<update id="updateUser" parameterType="com.cpiinfo.sysmgt.entity.User">
+		update sys_user <set>
+
+
+		<if test="userCode!=null">
+			user_code=#{userCode},
+		</if>
+		<if test="username!=null">
+			user_name=#{username},
+		</if>
+
+		<if test="userpwd!=null">
+			user_pwd=#{userpwd},
+		</if>
+		<if test="userType!=null">
+			user_type=#{userType},
+		</if>
+		<if test="sex!=null">
+			sex=#{sex},
+		</if>
+		<if test="phone!=null">
+			phone=#{phone},
+		</if>
+		<if test="email!=null">
+			email=#{email},
+		</if>
+		<if test="duties!=null">
+			duties=#{duties},
+		</if>
+		<if test="state!=null">
+			s_state=#{state},
+		</if>
+		<if test="unit!=null">
+			unit=#{unit},
+		</if>
+		<if test="unitCode!=null">
+			unit_id=#{unitCode},
+		</if>
+		<if test="departId!=null">
+			depart_id=#{departId},
+		</if>
+
+		<if test="unitCode!=null">
+			unit_code=#{unitCode},
+		</if>
+		<if test="postscript!=null">
+			postscript=#{postscript},
+		</if>
+		<if test="failsCount!=null">
+			fails_count=#{failsCount},
+		</if>
+		<if test="active!=null">
+			active=#{active},
+		</if>
+		<if test="lastChangePassword!=null">
+			last_change_password=#{lastChangePassword},
+		</if>
+		<if test="lockEndTime!=null">
+			lock_end_time=#{lockEndTime},
+		</if>
+		<if test="isFirstLogin!=null">
+			is_first_login=#{isFirstLogin},
+		</if>
+	</set>
+		where id=#{id}
+	</update>
+
+	<update id="updateMobileUserLoginTime"  >
+		update security_personnel_base <set>
+		<if test="totalLoginTime!=null">
+			total_login_time=#{totalLoginTime},
+		</if>
+
+		<if test="lastLoginTime!=null">
+			last_login_time=#{lastLoginTime},
+		</if>
+			</set>
+	where p_code =#{userCode}
+	</update>
+
+
+	<!-- 删除用户信息 -->
+	<delete id="delUserById" parameterType="String">
+		delete from sys_user
+		 where id=#{id}
+	</delete>
+
+	<!-- 禁用用户 -->
+	<update id="disableUserById" parameterType="String">
+		update
+		sys_user set s_state=0 where id=#{id}
+	</update>
+
+	<!-- 从用户禁用状态改成正常 -->
+	<update id="enableUserById" parameterType="String">
+		update sys_user
+		set s_state=1 where id=#{id}
+	</update>
+
+	<!-- 根据单位编号查询该单位下的用户列表 -->
+	<select id="userList" parameterType="Map" resultMap="BaseResultMap">
+		select * from sys_user where
+		s_state != 2 and unit_code = #{unitCode}
+		and user_name like
+		'%${username}%'
+	</select>
+	<!-- <select id="userList" parameterType="Map" resultMap="BaseResultMap">
+		select *
+		from (
+		select A.*,ROWNUM RN from
+		(
+		select * from jyspsc_sys_user where
+		s_state != 2 and unit_code = #{unitCode}
+		and user_name like
+		'%${username}%'
+		) A where ROWNUM &lt;= #{showCount}
+		) where RN
+		&gt;#{beginCount}
+	</select> -->
+	
+	<!-- 根据部门查询该部门下的用户列表 -->
+	<select id="userListByDepart" parameterType="Map" resultMap="BaseResultMap">
+		select u.*,d.DEPART_NAME,d.ORG_NAME,d.ORG_CODE from sys_user u,sys_department d,sys_depart_user du where
+		u.s_state != 2 and u.id = du.USER_ID and d.id = du.DEPART_ID and d.id = #{unitCode}
+		<if test="username!=null and username!=''">
+		and u.user_name like
+		'%${username}%'
+		</if>
+	</select>
+	<!-- <select id="userListByDepart" parameterType="Map" resultMap="BaseResultMap">
+		select *
+		from (
+		select A.*,ROWNUM RN from
+		(
+		select u.*,d.DEPART_NAME,d.ORG_NAME,d.ORG_CODE from jyspsc_sys_user u,JYSPSC_SYS_DEPARTMENT d,JYSPSC_SYS_DEPART_USER du where
+		u.s_state != 2 and u.id = du.USER_ID and d.id = du.DEPART_ID and d.id = #{unitCode}
+		<if test="username!=null and username!=''">
+		and u.user_name like
+		'%${username}%'
+		</if>
+		) A where ROWNUM &lt;= #{showCount}
+		) where RN
+		&gt;#{beginCount}
+	</select> -->
+
+	<!-- 根据单位查询该单位下的用户列表 -->
+	<select id="userListByOrg" parameterType="Map" resultMap="BaseResultMap">
+		select u.*,d.DEPART_NAME,d.ORG_NAME,d.ORG_CODE 
+		from sys_user u,sys_department d,sys_depart_user du where
+		u.s_state != 2 and u.id = du.USER_ID and d.id = du.DEPART_ID
+		<if test="unitCode != null and unitCode != ''">
+		and d.id in (select id from sys_department where ORG_CODE = #{unitCode}) 
+		</if> 
+		<if test="username!=null and username!=''">
+		and u.user_name like
+		'%${username}%'
+		</if>
+	</select>
+	<!-- <select id="userListByOrg" parameterType="Map" resultMap="BaseResultMap">
+		select *
+		from (
+		select A.*,ROWNUM RN from
+		(
+		select u.*,d.DEPART_NAME,d.ORG_NAME,d.ORG_CODE from jyspsc_sys_user u,JYSPSC_SYS_DEPARTMENT d,JYSPSC_SYS_DEPART_USER du where
+		u.s_state != 2 and u.id = du.USER_ID and d.id = du.DEPART_ID and d.id in (select id from JYSPSC_SYS_DEPARTMENT where ORG_CODE = #{unitCode}) 
+		<if test="username!=null and username!=''">
+		and u.user_name like
+		'%${username}%'
+		</if>
+		) A where ROWNUM &lt;= #{showCount}
+		) where RN
+		&gt;#{beginCount}
+	</select> -->
+
+	<!-- 根据单位编号查询该单位下的用户列表 -->
+	<select id="orgsAllUserList" parameterType="String" resultMap="BaseResultMap">
+		select * from sys_user where s_state != 2 and unit_code =
+		#{unitCode}
+	</select>
+
+	<!-- 根据单位code查询该单位下的用户总数 -->
+	<select id="getUserCountByOrgCode" parameterType="Map"
+		resultType="int">
+		select count(1) from sys_user where s_state != 2 and
+		unit_code =
+		#{orgCode}
+		and user_name like '%${username}%'
+	</select>
+	
+	<!-- 根据部门查询该单位下的用户总数 -->
+	<select id="getUserCountByOrgCodeDepart" parameterType="Map"
+		resultType="int">
+		select count(1) from sys_user u,sys_department d,sys_depart_user du where s_state != 2 and u.id = du.USER_ID and d.id = du.DEPART_ID and d.id = #{orgCode}
+		<if test="username!=null and username!=''">
+		and user_name like '%${username}%'
+		</if>
+	</select>
+	
+	<!-- 根据单位查询该单位下的用户总数 -->
+	<select id="getUserCountByOrgCodeOrg" parameterType="Map"
+		resultType="int">
+		select count(1) from sys_user u,sys_department d,sys_depart_user du where s_state != 2 and u.id = du.USER_ID and d.id = du.DEPART_ID
+		<if test="orgCode != null and orgCode != ''">
+		and d.id in (select id from sys_department where ORG_CODE = #{orgCode}) 
+		</if>
+		<if test="username!=null and username!=''">
+		and user_name like '%${username}%'
+		</if>
+	</select>
+
+	<!-- 查询所有用户列表 -->
+	<select id="allUserList" resultMap="BaseResultMap">
+		select * from sys_user
+		where s_state != 2
+	</select>
+	<!-- 查询所有用户(包含shortCode和Leavel)列表 -->
+	<select id="userListForIMDG" resultMap="UserForIMDGMap">
+		select u.*, o.short_code,
+		o.l_level from
+		sys_user u left join
+		sys_org o on u.unit_id
+		= o.id
+		where u.s_state !='2'
+	</select>
+	<!-- 根据用户编号查询用户 -->
+	<select id="findByUserCode" parameterType="String" resultMap="BaseResultMap">
+		select id, user_code, user_name, user_pwd, unit_id, unit_code, unit
+		from
+		sys_user where user_code=#{userId} and s_state != '2'
+	</select>
+
+	<!-- 根据用户id删除 用户角色中间表 -->
+	<delete id="delUserAndRoleByUserId" parameterType="String">
+		delete from
+		sys_user_role where user_id=#{userId}
+	</delete>
+	<!-- 根据用户id删除 用户部门中间表 -->
+	<delete id="delUserAndDepartById" parameterType="String">
+		delete from
+		sys_depart_user where user_id=#{userId}
+	</delete>
+
+	<!-- 向 用户角色表 中添加数据 -->
+	<insert id="addUserAndRole" parameterType="Map">
+		insert into
+		sys_user_role(id, user_id, role_id)
+		values(#{id},#{userId},#{roleId})
+	</insert>
+
+	<!-- 根据角色id查询该角色下的用户列表 -->
+	<select id="queryUserListByRoleId" parameterType="Map"
+		resultMap="BaseResultMap">
+		select id,
+		user_code, user_name, user_pwd, sex, phone, email,
+		user_type, unit,
+		unit_code, unit_id, duties, s_state
+		from sys_user where s_state
+		!= 2 and id in
+		(select user_id from sys_user_role where role_id
+		= #{roleId})
+		and user_name like '%${userName}%'
+	</select>
+	<!-- <select id="queryUserListByRoleId" parameterType="Map"
+		resultMap="BaseResultMap">
+		select * from (
+		select A.*,ROWNUM RN from
+		(
+		select id,
+		user_code, user_name, user_pwd, sex, phone, email,
+		user_type, unit,
+		unit_code, unit_id, duties, s_state
+		from jyspsc_sys_user where s_state
+		!= 2 and id in
+		(select user_id from jyspsc_sys_user_role where role_id
+		= #{roleId})
+		and user_name like '%${userName}%'
+		) A where ROWNUM &lt;=
+		#{showCount}
+		) where RN &gt;#{beginCount}
+	</select> -->
+
+	<!-- 根据角色id查询该角色下的用户总数量 -->
+	<select id="getUserCountByRoleId" parameterType="Map"
+		resultType="int">
+		select count(1) from sys_user where s_state != 2 and
+		id in
+		(select user_id from sys_user_role where role_id =#{roleId})
+		and user_name like '%${userName}%'
+	</select>
+
+	<!-- 根据单位编号删除该单位下的所有用户 -->
+	<update id="delUserByOrgCode" parameterType="String">
+		update
+		sys_user set s_state=2 where unit_code=#{orgCode}
+	</update>
+
+	<!-- 根据email查询用户 -->
+	<select id="queryUserByEmail" parameterType="String" resultMap="BaseResultMap">
+		select id, user_code, user_name, user_pwd, sex, phone, email,
+		user_type,
+		unit, unit_code, unit_id, duties, s_state
+		from sys_user where
+		email = #{email} and s_state != '2'
+	</select>
+
+	<!-- 根据email查询用户,部分单位信息及用户对应的首页权限 -->
+	<select id="queryUserForIMDGByEmail" parameterType="String"
+		resultMap="UserForIMDGMap">
+		select u.*, o.short_code, o.l_level from
+		sys_user u
+		left join
+		sys_org o on u.unit_id = o.id
+		where u.s_state !='2' and
+		u.email = #{email}
+	</select>
+	
+	<!-- 根据工号查询用户,部分单位信息及用户对应的首页权限 -->
+	<select id="queryUserForIMDGByUserCode" parameterType="String"
+		resultMap="UserForIMDGMap">
+SELECT u.*, o.short_code, o.l_level, o.ORG_CODE FROM sys_department d,sys_user u,sys_depart_user du,sys_org o
+ WHERE d.ID = du.DEPART_ID AND u.ID = du.USER_ID AND d.ORG_CODE = o.ORG_CODE AND u.s_state !='2' and
+		u.USER_CODE = #{userCode}  ORDER BY o.L_LEVEL DESC 
+	</select>
+	
+	<!-- 初始化密码 -->
+	<update id="initPwd" parameterType="Map">
+		update sys_user set
+		user_pwd = #{pwd} where id=#{userId}
+	</update>
+
+	<!-- 初始化密码 -->
+	<update id="initPwd1" parameterType="Map">
+		update sys_user set
+		user_pwd = #{pwd},is_first_login=0,last_change_password=NOW() where user_code=#{userId}
+	</update>
+
+	<!-- 从角色中删除用户 -->
+	<delete id="delUsersRole" parameterType="Map">
+		delete from
+		sys_user_role where user_id = #{userId} and role_id =#{roleId}
+	</delete>
+
+
+
+
+	<!-- 给角色添加用户时的用户的列表 -->
+	<select id="rolesUserListByPage" parameterType="Map" resultMap="BaseResultMap">
+		select id, user_code,
+		user_name, user_pwd, sex, phone, email,
+		user_type, unit, unit_code,
+		unit_id, duties, s_state
+		from sys_user where s_state != 2 and id
+		not in
+		(select user_id from sys_user_role where role_id =#{roleId})
+		and unit_code = #{unitCode} 
+		<if test="username!=null and username!=''">
+			and user_name like '%${username}%'
+		</if>
+	</select>
+	<!-- <select id="rolesUserListByPage" parameterType="Map" resultMap="BaseResultMap">
+		select * from (
+		select A.*,ROWNUM RN from
+		(
+		select id, user_code,
+		user_name, user_pwd, sex, phone, email,
+		user_type, unit, unit_code,
+		unit_id, duties, s_state
+		from jyspsc_sys_user where s_state != 2 and id
+		not in
+		(select user_id from jyspsc_sys_user_role where role_id =#{roleId})
+		and unit_code = #{unitCode} 
+		<if test="username!=null and username!=''">
+			and user_name like '%${username}%'
+		</if>
+		) A where ROWNUM &lt;= #{showCount}
+		) where RN
+		&gt;#{beginCount}
+
+
+	</select> -->
+
+	<!-- 给角色添加用户进的用户总数量 -->
+	<select id="getRolesUserListCount" parameterType="Map"
+		resultType="java.lang.Integer">
+		select count(1) from sys_user where s_state != 2 and
+		id not in
+		(select user_id from sys_user_role where role_id =#{roldId})
+		and unit_code = #{unitCode} 
+		<if test="username!=null and username!=''">
+			and user_name like '%${username}%'
+		</if>
+		
+	</select>
+
+	<!-- 搜索时给角色添加用户时的用户的列表 -->
+	<select id="rolesUserListByPageForSearch" parameterType="Map"
+		resultMap="BaseResultMap">
+		select id,
+		user_code, user_name, user_pwd, sex, phone, email,
+		user_type, unit,
+		unit_code, unit_id, duties, s_state
+		from sys_user where
+		unit_code in (
+		select org_code
+		from sys_org where s_state != 0
+		and org_path like '%${unitCode}%'
+		) and id not in
+		(select user_id from sys_user_role where role_id=#{roleId} )
+		and s_state != 2
+		<if test="username!=null and username!=''">
+			 and user_name like '%${username}%'
+		</if>
+	</select>
+	<!-- <select id="rolesUserListByPageForSearch" parameterType="Map"
+		resultMap="BaseResultMap">
+		select * from (
+		select A.*,ROWNUM RN from
+		(
+		select id,
+		user_code, user_name, user_pwd, sex, phone, email,
+		user_type, unit,
+		unit_code, unit_id, duties, s_state
+		from jyspsc_sys_user where
+		unit_code in (
+		select org_code
+		from jyspsc_sys_org where s_state != 0
+		start with org_code=#{unitCode} connect by prior org_code=parent_code
+		) and id not in
+		(select user_id from jyspsc_sys_user_role where role_id=#{roleId} )
+		and s_state != 2
+		<if test="username!=null and username!=''">
+			 and user_name like '%${username}%'
+		</if>
+		
+		) A
+		where ROWNUM &lt;= #{showCount}
+		) where RN &gt;#{beginCount}
+	</select> -->
+
+	<!-- 搜索时给角色添加用户进的用户总数量 -->
+	<select id="getRolesUserListCountForSearch" parameterType="Map"
+		resultType="int">
+		select count(1) from sys_user where unit_code in (
+		select org_code
+		from sys_org where s_state != 0 
+		and org_path like '%${unitCode}%'
+		) and id not in
+		(select user_id from sys_user_role where role_id= #{roldId} )
+		and s_state != 2 
+		<if test="username!=null and username!=''">
+			 and user_name like '%${username}%'
+		</if>
+	</select>
+
+
+
+	<!-- 用户维护页面：分页搜索用户时 的用户列表 -->
+	<select id="userListForSearch" parameterType="Map" resultMap="BaseResultMap">
+		select * from sys_user
+		where unit_code in (
+		select org_code
+		from sys_org where s_state != 0 
+		and org_path like '%${unitCode}%'
+		) and s_state != 2 
+		<if test="username!=null and username!=''">
+			and user_name like '%${username}%'
+		</if>
+	</select>
+	<!-- <select id="userListForSearch" parameterType="Map" resultMap="BaseResultMap">
+
+		select * from (
+		select A.*,ROWNUM RN from
+		(
+		select * from jyspsc_sys_user
+		where unit_code in (
+		select org_code
+		from jyspsc_sys_org where s_state != 0 start with org_code=#{unitCode} connect by prior
+		org_code=parent_code
+		) and s_state != 2 
+		<if test="username!=null and username!=''">
+			and user_name like '%${username}%'
+		</if>
+		
+		) A where ROWNUM
+		&lt;= #{showCount}
+		) where RN &gt;#{beginCount}
+	</select> -->
+	
+	<!-- 用户维护页面：分页搜索用户时 的用户列表 -->
+	<select id="userListForSearchByDepart" parameterType="Map" resultMap="BaseResultMap">
+		select * from sys_user
+		where unit_code in (
+		select org_code
+		from sys_org where s_state != 0
+		and org_path like '%${unitCode}%'
+		) and s_state != 2 
+		<if test="username!=null and username!=''">
+			and user_name like '%${username}%'
+		</if>
+	</select>
+	<!-- <select id="userListForSearchByDepart" parameterType="Map" resultMap="BaseResultMap">
+
+		select * from (
+		select A.*,ROWNUM RN from
+		(
+		select * from jyspsc_sys_user
+		where unit_code in (
+		select org_code
+		from jyspsc_sys_org where s_state != 0 start with org_code=#{unitCode} connect by prior
+		org_code=parent_code
+		) and s_state != 2 
+		<if test="username!=null and username!=''">
+			and user_name like '%${username}%'
+		</if>
+		
+		) A where ROWNUM
+		&lt;= #{showCount}
+		) where RN &gt;#{beginCount}
+	</select> -->
+
+	<!-- 用户维护页面：分页搜索用户时 的用户总数量 -->
+	<select id="getUserCountByOrgCodeForSearch" parameterType="Map"
+		resultType="int">
+		select count(1) from sys_user where unit_code in (
+		select org_code
+		from sys_org where s_state != 0
+		and org_path like '%${orgCode}%'
+		) and s_state != 2 
+			<if test="username !=null and username !=''">
+			and user_name like '%${username}%'
+		</if>
+	</select>
+	<select id="queryuserby" parameterType="java.util.Map" resultMap="BaseResultMap">
+		select * from sys_user where user_code like '%${user.userCode}%' order by  id
+	</select>
+
+	<select id="pageUserList"  resultMap="BaseResultMap">
+		select * from sys_user
+		<where>
+			<if test='dto.orgCode != null '>
+				and unit_code = #{dto.orgCode}
+			</if>
+			<if test='dto.userName != null '>
+				and user_name like '%${dto.userName}%'
+			</if>
+			<if test='dto.roleId != null '>
+				and user_type = #{dto.roleId}
+			</if>
+			and s_state='1'  and fixed_value='0'
+		</where>
+		order by update_time desc
+	</select>
+	<select id="getStationNameByCode" resultType="string">
+		select station_name from pv_station_info where  station_code = #{stationCode}
+	</select>
+
+	<select id="queryDepartNameById" resultType="String">
+		select depart_name from  sys_department where  id =#{departId}
+	</select>
+</mapper>

@@ -1,39 +1,62 @@
-# iot-platform
+**项目说明** 
+- 采用SpringBoot、MyBatis搭建。
+- 应用基础框架架构代码
+- 支持MySQL、Oracle、SQL Server、PostgreSQL等主流数据库
 
-#### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
-
-#### 软件架构
-软件架构说明
-
-
-#### 安装教程
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 使用说明
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+**系统初始账号**
+- 系统管理员(负责系统管理、用户增删) 账号:administrator 初始密码:Spiccpiinfo@1821!
+- 审计员(负责日志审计和日志备份) 账号:comptoller 初始密码:Spiccpiinfo@1821!
+- 安全管理员(用户角色权限分配) 账号:security 初始密码:Spiccpiinfo@1821!
 
 
-#### 特技
+**整体模块划分说明**
+# 整体模块划分
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+iot-platform
+
+说明:模块划分。
+
+1. iot-platform-common
+
+   说明:公共模块,提供数据源切换、mybatis、kafka、websocket的统一工具类。
+
+   (1) iot-platform-common-authnz  
+
+   (2) iot-platform-base 
+
+   (3) iot-platform-sysmgt  
+
+   (4) iot-platform-sysmgt-api  
+
+   (5) iot-platform-common-dynamic-datasource 
+
+   (6) iot-platform-common-message-direct 
+
+   (7) iot-platform-common-message-kafka  
+
+   (8) iot-platform-common-mybatis
+
+   (9) iot-platform-common-tools
+
+   (10) iot-platform-websocket-client
+
+   (11) iot-platform-websocket-server 
+
+2. iot-platform-modules
+
+   说明:前后端页面上业务部分的接口模块,根据需求拆分成不同的子模块。
+
+   (1) iot-platform-logdict  字典和日志管理
+
+3. iot-platform-polymerize
+
+   说明: 沧州项目配置文件存放和启动模块,依赖中根据需求导入不同的业务模块。
+
+4. iot-platform-vendors
+
+   说明:对接厂商接口模块.根据不同设备分不同子模块,处理完的数据通过消息方式和业务模块交互。
+   
+   
+
+###### 启动项目前,请先修改application.yml中spring.profiles.active的值和对应application-${active}.yml中redis、influxdb、datasource等url地址。
+

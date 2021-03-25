@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<groupId>com.cpiinfo.iot</groupId>
+		<artifactId>iot-platform</artifactId>
+		<version>1.2.0</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>iot-platform-common</artifactId>
+	<name>iot-platform-common</name>
+	<description>公共模块</description>
+	<modules>
+		<module>iot-platform-common-mybatis</module>
+		<module>iot-platform-common-tools</module>
+		<module>iot-platform-common-dynamic-datasource</module>
+		<module>iot-platform-websocket-server</module>
+		<module>iot-platform-common-message-kafka</module>
+		<module>iot-platform-websocket-client</module>
+        <module>iot-platform-common-message-direct</module>
+        <module>iot-platform-common-authnz</module>
+        <module>iot-platform-sysmgt</module>
+        <module>iot-platform-sysmgt-api</module>
+        <module>iot-platform-base</module>
+    </modules>
+	<packaging>pom</packaging>
+</project>

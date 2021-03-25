@@ -1,0 +1,98 @@
+spring:
+  application:
+    name: iot-platform-polymerize
+  jackson:
+    #返回json全局时间格式，如果某些表中只有年月日，则需要在对应的实体类上加上个性化的注解
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    default-property-inclusion: non_null
+  session:
+    store-type: redis
+    #session自动过期/超时时间
+    timeout: 1500m
+  #redis
+  redis:
+    database: 0
+    host: 192.168.56.104
+    timeout: 30s
+    port: 6379
+    password: IotPlatform!v1.0
+  #数据源(主数据源，默认进来的数据源)
+  datasource:
+    dynamic:
+      datasource:
+        master:
+          url: jdbc:mysql://192.168.56.104:3306/iot_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+          username: iotuser
+          password: lmM#qIt.6K
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          type: com.alibaba.druid.pool.DruidDataSource
+  servlet:
+    multipart:
+      # 2.5GB
+      max-file-size: 120MB
+      # 10TB
+      max-request-size: 10485760MB
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.cpiinfo.iot.*.entity;com.cpiinfo.*.entity
+  global-config:
+    #数据库相关配置
+    db-config:
+      db-type: MYSQL
+      #主键类型  AUTO:"数据库ID自增", INPUT:"用户输入ID", ID_WORKER:"全局唯一ID (数字类型唯一ID)", UUID:"全局唯一ID UUID";
+      id-type: ID_WORKER
+      #字段策略 IGNORED:"忽略判断",NOT_NULL:"非 NULL 判断"),NOT_EMPTY:"非空判断"
+      field-strategy: NOT_NULL
+      #驼峰下划线转换
+      column-underline: true
+    banner: false
+  #原生配置
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+    jdbc-type-for-null: 'null'
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    #屏蔽swagger异常信息
+    io.swagger.models.parameters.AbstractSerializableParameter: error
+    com.cpiinfo.iot: info
+
+com:
+  cpiinfo:
+    iot:
+      #多租户配置
+      tenant:
+        default-tenant: tenant01
+        datasource-mapping:
+          tenant01: master
+      #系统日志记录保留天数（三权分立日志审计）
+      sys-log:
+        keep-days: 180
+      #系统管理菜单的资源表id
+      user-manage-resource-id: 42005b31f09e4255b79e26124abb551c
+      #从应用指定外部目录加载静态资源供前端访问
+      static:
+        #静态资源对外暴露的虚拟访问路径
+        access-path: /files/**
+        #静态资源（注意Linux和Windows上的目录结构不同）
+        folder: /data/iot/files/
+      #需使用Influxdb时打开配置
+      #influxdb:
+      #  url: http://172.30.200.99:8086
+      #  username: admin
+      #  password: admin
+      #  database: master
+      #需使用Kafka时打开配置
+      #kafka:
+      #  bootstrap-server: 172.30.200.99:9092
+      authnz:
+        ignore-urls:
+          - "we://**"
+          - "**/socket/**"
+          - "/server/browser/**"

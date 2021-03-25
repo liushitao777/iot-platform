@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>iot-platform</artifactId>
+        <groupId>com.cpiinfo.iot</groupId>
+        <version>1.2.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>iot-platform-polymerize</artifactId>
+    <name>iot-platform-polymerize</name>
+    <description>聚合工程示例(模块都在该工程下集成打包)</description>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.cpiinfo.iot</groupId>
+            <artifactId>iot-platform-sysmgt</artifactId>
+            <version>${iot-platform.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.cpiinfo.iot</groupId>
+            <artifactId>iot-platform-common-authnz</artifactId>
+            <version>${iot-platform.version}</version>
+        </dependency>
+
+        <!--依赖多数据源项目，因为多数据源里面已经依赖mybatis，则不需要再次依赖-->
+        <dependency>
+            <groupId>com.cpiinfo.iot</groupId>
+            <artifactId>iot-platform-common-dynamic-datasource</artifactId>
+            <version>${iot-platform.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.cpiinfo.iot</groupId>
+            <artifactId>iot-platform-common-mybatis</artifactId>
+            <version>${iot-platform.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.cpiinfo.iot</groupId>
+            <artifactId>iot-platform-common-tools</artifactId>
+            <version>${iot-platform.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.cpiinfo.iot</groupId>
+            <artifactId>iot-platform-common-message-kafka</artifactId>
+            <version>${iot-platform.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.cpiinfo.iot</groupId>
+            <artifactId>iot-platform-websocket-server</artifactId>
+            <version>${iot-platform.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.cpiinfo.iot</groupId>
+            <artifactId>iot-platform-websocket-client</artifactId>
+            <version>${iot-platform.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.cpiinfo.iot</groupId>
+            <artifactId>iot-platform-logdict</artifactId>
+            <version>${iot-platform.version}</version>
+        </dependency>
+        
+        <!--spring session 在redis管理的依赖-->
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <!--provided表明该包只在编译和测试的时候用-->
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <!--provided表明该包只在编译和测试的时候用-->
+            <scope>provided</scope>
+        </dependency>
+
+        <!--这里需要用到sw的注解，只在当前工程起作用-->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--swagger-bootstrap-ui-->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>swagger-bootstrap-ui</artifactId>
+            <version>1.9.6</version>
+        </dependency>
+
+        <dependency>
+        	<groupId>org.springframework.boot</groupId>
+        	<artifactId>spring-boot-configuration-processor</artifactId>
+        	<optional>true</optional>
+        </dependency>
+        
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>3.0.9</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <executable>true</executable>
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.cpiinfo.iot</groupId>
+    <artifactId>iot-platform</artifactId>
+    <version>1.2.0</version>
+    <modules>
+        <module>iot-platform-common</module>
+        <module>iot-platform-modules</module>
+        <module>iot-platform-polymerize</module>
+        <module>iot-platform-vendors</module>
+    </modules>
+
+    <name>iot-platform</name>
+    <description>应用基础框架</description>
+    <packaging>pom</packaging>
+
+    <!--父依赖2.2.5-->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.5.RELEASE</version>
+    </parent>
+
+    <properties>
+        <!--跳过测试-->
+        <skipTests>true</skipTests>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <!--swagger-->
+        <swagger.version>2.9.2</swagger.version>
+        <!--docker-->
+        <docker.plugin.version>1.1.1</docker.plugin.version>
+        <iot-platform.version>1.2.0</iot-platform.version>
+    </properties>
+
+    <dependencies>
+        <!--引入单元测试，所有子工程都需要-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!--这里只是声明，子工程只需要引入依赖，不需要写版本号-->
+    <dependencyManagement>
+        <dependencies>
+            <!--swagger2 begin-->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+            <!--swagger2 end-->
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.spotify</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>${docker.plugin.version}</version>
+                    <configuration>
+                        <imageName>iot/${project.artifactId}</imageName>
+                        <dockerDirectory>${project.basedir}/</dockerDirectory>
+                        <resources>
+                            <resource>
+                                <targetPath>/</targetPath>
+                                <directory>${project.build.directory}</directory>
+                                <include>${project.build.finalName}.jar</include>
+                            </resource>
+                        </resources>
+                    </configuration>
+                </plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>2.3</version>
+					<configuration>
+						<generateBackupPoms>false</generateBackupPoms>
+					</configuration>
+				</plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    <distributionManagement>
+        <!--私有仓库-->
+        <repository>
+            <id>releases</id>
+            <name>Internal Releases</name>
+            <url>http://172.30.200.23:8080/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Internal Snapshots</name>
+            <url>http://172.30.200.23:8080/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <repositories>
+        <!--私有仓库-->
+        <repository>
+            <id>nexus</id>
+            <name>Nexus Repository</name>
+            <url>http://172.30.200.23:8080/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <!-- snapshots默认是关闭的,需要开启 -->
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>spring-io</id>
+            <name>spring-io</name>
+            <url>https://repo.spring.io/libs-release/</url>
+        </repository>
+        <!--阿里云-->
+        <repository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>

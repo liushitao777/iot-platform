@@ -1,0 +1,1 @@
+alter table sys_resource add system_code varchar(30);

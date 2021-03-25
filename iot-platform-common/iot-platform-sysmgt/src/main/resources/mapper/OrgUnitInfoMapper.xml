@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cpiinfo.sysmgt.dao.OrgUnitInfoMapper">
+	
+	<resultMap id="BaseResultMap" type="com.cpiinfo.sysmgt.entity.Organization">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="ORG_NAME" property="orgName" jdbcType="VARCHAR" />
+		<result column="SHORT_NAME" property="shortName" jdbcType="VARCHAR" />
+		<result column="ORG_CODE" property="orgCode" jdbcType="VARCHAR" />
+		<result column="CAPACITY" property="capacity" jdbcType="FLOAT" />
+		<result column="LOCATION" property="location" jdbcType="VARCHAR" />
+		<result column="PROVINCE" property="province" jdbcType="VARCHAR" />
+		<result column="LINKMAN" property="linkman" jdbcType="VARCHAR" />
+		<result column="TELEPHONE" property="telephone" jdbcType="NUMERIC" />
+		<result column="COORDINATE_SYS" property="coordinateSys" jdbcType="VARCHAR" />
+		<result column="LONGITUDE" property="longitude" jdbcType="NUMERIC" />
+		<result column="DIMENSION" property="dimension" jdbcType="NUMERIC" />
+		<result column="ASSETS_RATIO" property="assetsRatio" jdbcType="NUMERIC" />
+		<result column="IS_NORMAL" property="isNormal" jdbcType="VARCHAR" />
+		<result column="ACCESS_SITUATION" property="accessSituation" jdbcType="VARCHAR" />
+		<result column="MAIN_INDUSTRY" property="mainIndustry" jdbcType="VARCHAR" />
+	</resultMap>
+	<update id="updateOrgUnitInfo" parameterType="com.cpiinfo.sysmgt.entity.Organization">
+		update sys_org
+		<set>
+			
+			<if test="orgName!=null and orgName!=''">
+			    ORG_NAME = #{orgName},
+			</if>
+			<if test="province!=null">
+			    PROVINCE = #{province},
+			</if>
+			<if test="linkman!=null">
+				LINKMAN = #{linkman},			
+			</if>
+			<if test="telephone!=null">
+			    TELEPHONE = #{telephone},
+			</if>
+			<if test="location!=null">
+			    LOCATION = #{location},
+			</if>
+			<if test="coordinateSys!=null">
+			    COORDINATE_SYS = #{coordinateSys},
+			</if>
+			<if test="longitude!=null">
+			    LONGITUDE = #{longitude},
+			</if>
+			<if test="dimension!=null">
+			    DIMENSION = #{dimension},
+			</if>
+			<if test="assetsRatio!=null">
+			    ASSETS_RATIO = #{assetsRatio},
+			</if>
+			<if test="isNormal!=null">
+			    IS_NORMAL = #{isNormal},
+			</if>
+			<if test="accessSituation!=null">
+			    ACCESS_SITUATION = #{accessSituation},
+			</if>
+			<if test="mainIndustry!=null">
+			    MAIN_INDUSTRY = #{mainIndustry},
+			</if>
+			<if test="capacity!=null">
+			    CAPACITY = #{capacity},
+			</if>
+			SHORT_NAME = #{shortName}
+		</set>
+		where ORG_CODE=#{orgCode}
+	</update>
+	
+
+  	<select id="getPlateCapacity" resultMap="BaseResultMap">
+       select t.capacity,t.org_code from sys_org t where t.parent_code='10064' order by t.sort desc
+  	</select>
+  	<!-- 根据单位编号查询单位 -->
+  	<select id="selectUnitInfo" resultMap="BaseResultMap">
+  		select * from sys_org where org_code = #{orgCode}
+  	</select>
+  	
+  	<!-- 根据当前code得到父节点-->
+	<select id="getAllParent" parameterType="String" resultMap="BaseResultMap">
+		<![CDATA[
+   			  SELECT t.*
+  FROM sys_org t
+  where t.s_state != '0' and t.org_code != #{orgCode}
+  and org_path like '%${orgCode}' and org_path not like '%${orgCode}_%'
+   	    ]]>
+	</select>
+	
+	<update id="updateParentUnitInfo" parameterType="com.cpiinfo.sysmgt.entity.Organization" >
+		update sys_org
+		<set>
+			CAPACITY = #{capacity}
+		</set>
+		where ORG_CODE=#{orgCode}
+	</update>
+</mapper>

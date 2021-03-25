@@ -1,0 +1,9 @@
+server:
+  port: 9898
+  #servlet:
+  #  context-path: /iot-platform
+
+spring:
+  # 环境 dev:开发环境|test:测试环境|prod:生产环境
+  profiles:
+    active: local #激活的配置文件

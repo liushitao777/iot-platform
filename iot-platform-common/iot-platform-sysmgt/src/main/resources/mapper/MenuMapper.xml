@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cpiinfo.sysmgt.dao.MenuMapper">
+	<resultMap id="BaseResultMap" type="com.cpiinfo.sysmgt.entity.Menu">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="rname" property="rname" jdbcType="VARCHAR" />
+		<result column="sort" property="sort" jdbcType="VARCHAR" />
+		<result column="parent_id" property="parentId" jdbcType="VARCHAR" />
+		<result column="url" property="url" jdbcType="VARCHAR" />
+		<result column="loadfile" property="loadfile" jdbcType="VARCHAR" />
+		<result column="icon" property="icon" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<result column="s_state" property="state" jdbcType="VARCHAR" />
+		<result column="RES_PATH" property="resPath" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="detailResultMap" type="com.cpiinfo.sysmgt.entity.Menu">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="rname" property="rname" jdbcType="VARCHAR" />
+		<result column="sort" property="sort" jdbcType="VARCHAR" />
+		<result column="parent_id" property="parentId" jdbcType="VARCHAR" />
+		<result column="url" property="url" jdbcType="VARCHAR" />
+		<result column="loadfile" property="loadfile" jdbcType="VARCHAR" />
+		<result column="icon" property="icon" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<result column="s_state" property="state" jdbcType="VARCHAR" />
+		<collection property="opers" ofType="com.cpiinfo.sysmgt.entity.Oper">
+			<result column="op_id" property="id" jdbcType="VARCHAR" />
+			<result column="name" property="name" jdbcType="VARCHAR" />
+		</collection>
+	</resultMap>
+	<resultMap id="detailUserMenuResultMap" type="com.cpiinfo.sysmgt.entity.UserMenu">
+		<result column="user_Id" property="userId" jdbcType="VARCHAR" />
+		<result column="menu_Id" property="id" jdbcType="VARCHAR" />
+		<result column="rname" property="rname" jdbcType="VARCHAR" />
+		<result column="sort" property="sort" jdbcType="VARCHAR" />
+		<result column="parent_id" property="parentId" jdbcType="VARCHAR" />
+		<result column="url" property="url" jdbcType="VARCHAR" />
+		<result column="loadfile" property="loadfile" jdbcType="VARCHAR" />
+		<result column="icon" property="icon" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="VARCHAR" />
+		<result column="s_state" property="state" jdbcType="VARCHAR" />
+		<collection property="opers" ofType="com.cpiinfo.sysmgt.entity.Oper">
+			<result column="op_id" property="id" jdbcType="VARCHAR" />
+			<result column="name" property="name" jdbcType="VARCHAR" />
+		</collection>
+	</resultMap>
+	<resultMap id="operMap" type="com.cpiinfo.sysmgt.entity.Oper">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="menuOper" type="com.cpiinfo.sysmgt.entity.MenuOper">
+		<result column="id" property="id" jdbcType="VARCHAR" />
+		<result column="resourceId" property="resource_id" jdbcType="VARCHAR" />
+		<result column="operId" property="oper_id" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="dictionaryMap" type="com.cpiinfo.sysmgt.entity.Dictionary" >
+	    <result column="category_code" property="id" jdbcType="VARCHAR" />
+	    <result column="category_name" property="name" jdbcType="VARCHAR" />
+	    <result column="group_code" property="type" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="sysResourceResultMap" type="com.cpiinfo.sysmgt.api.model.SysResource">
+		<result column="ID" property="resId" jdbcType="VARCHAR" />
+		<result column="rname" property="resName" jdbcType="VARCHAR" />
+		<result column="rname_code" property="resNameCode" jdbcType="VARCHAR" />
+		<result column="res_path" property="resPath" jdbcType="VARCHAR" />
+		<result column="res_type" property="resType" jdbcType="VARCHAR" />
+		<result column="sort" property="sort" jdbcType="VARCHAR" />
+		<result column="parent_id" property="parentId" jdbcType="VARCHAR" />
+		<result column="url" property="resUrl" jdbcType="VARCHAR" />
+		<result column="loadfile" property="loadFile" jdbcType="VARCHAR" />
+		<result column="icon" property="icon" jdbcType="VARCHAR" />
+		<result column="s_state" property="state" jdbcType="VARCHAR" />
+		<result column="page_code" property="pageCode" jdbcType="VARCHAR" />
+		<collection property="grantRoles" ofType="com.cpiinfo.sysmgt.api.model.SysRole">
+			<result column="role_code" property="roleCode" jdbcType="VARCHAR" />
+			<result column="role_name" property="roleName" jdbcType="VARCHAR" />
+		</collection>
+	</resultMap>
+	
+	
+	<select id="findallmenu" resultType="com.cpiinfo.sysmgt.entity.ResourceVo">
+	select  id as cid,rname as cname,
+		nvl(parent_id,0) as pid,url
+		from sys_resource where s_state='1' order by sort asc
+    </select>
+
+
+  <select id="findParentIfTwoLevel" parameterType="java.lang.String" resultType="java.lang.String">
+		      SELECT ORG_CODE  as orgCode FROM sys_org  where  ORG_CODE = #{value}
+
+  </select>
+		<!-- 查询一人员拥有的资源 -->
+	<select id="findusermenubyuserId" parameterType="java.util.Map" resultType="com.cpiinfo.sysmgt.entity.ResourceVo">
+		select  id as cid,rname as cname,
+		nvl(parent_id,0) as pid,url
+		from (select distinct b.* from sys_user_role  a
+				inner join sys_role_resource c on a.role_id=c.role_id
+				inner join sys_resource b on c.RESOURCE_ID=b.id and b.s_state='1'
+				where user_id=#{userId})
+		 order by sort asc
+	</select>
+	<insert id="insert" parameterType="com.cpiinfo.sysmgt.entity.Menu">
+		insert into sys_resource
+		(id, rname, sort,
+		parent_id, url, loadfile,
+		icon, update_user,
+		update_time,
+		s_state)
+		values (#{id,jdbcType=VARCHAR},
+		#{rname,jdbcType=VARCHAR},
+		#{sort,jdbcType=VARCHAR},
+		#{parentId,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR},
+		#{loadfile,jdbcType=VARCHAR},
+		#{icon,jdbcType=VARCHAR},
+		#{updateUser,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=VARCHAR},
+		#{state,jdbcType=VARCHAR})
+	</insert>
+	<select id="queryResPath" parameterType="String" resultMap="BaseResultMap">
+		select * from sys_resource t where t.id = #{parentId}
+	</select>
+	<insert id="insertSelective" parameterType="com.cpiinfo.sysmgt.entity.Menu">
+		insert into sys_resource
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="rname != null">
+				rname,
+			</if>
+			<if test="sort != null">
+				sort,
+			</if>
+			<if test="parentId != null">
+				parent_id,
+			</if>
+			<if test="url != null">
+				url,
+			</if>
+			<if test="loadfile != null">
+				loadfile,
+			</if>
+			<if test="icon != null">
+				icon,
+			</if>
+			<if test="updateUser != null">
+				update_user,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="state != null">
+				s_state,
+			</if>
+			<if test=" resPath != null">
+				res_path,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="rname != null">
+				#{rname,jdbcType=VARCHAR},
+			</if>
+			<if test="sort != null">
+				#{sort,jdbcType=VARCHAR},
+			</if>
+			<if test="parentId != null">
+				#{parentId,jdbcType=VARCHAR},
+			</if>
+			<if test="url != null">
+				#{url,jdbcType=VARCHAR},
+			</if>
+			<if test="loadfile != null">
+				#{loadfile,jdbcType=VARCHAR},
+			</if>
+			<if test="icon != null">
+				#{icon,jdbcType=VARCHAR},
+			</if>
+			<if test="updateUser != null">
+				#{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime,jdbcType=VARCHAR},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=VARCHAR},
+			</if>
+			<if test=" resPath != null">
+				#{resPath,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<!-- 批量插入资源和操作关联表数据 -->
+	<insert id="addMenuOpers" parameterType="java.util.List">
+		insert into
+		sys_resource_oper(id,resource_id,oper_id)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id,jdbcType=VARCHAR},#{item.resourceId,jdbcType=VARCHAR},#{item.operId,jdbcType=VARCHAR})
+		</foreach>
+	</insert>
+	<!-- 通过角色ID查询菜单 -->
+	<select id="listMenusIdByRoleId" parameterType="String"
+		resultType="String">
+		select distinct resource_id from sys_role_resource where
+		role_id=#{role_id} 
+	</select>
+
+	<!-- 通过角色ID查询资源 -->
+	<select id="listMenusByRoleId" parameterType="String" resultMap="BaseResultMap">
+		select * from (
+		(select resource_id from sys_role_resource where
+		role_id=#{role_id}) as rr left
+		join
+		(select id, rname, parent_id,sort
+		from sys_resource) as r on
+		rr.resource_id=r.id
+		) order by sort
+	</select>
+
+	<select id="listMenusByPgenation" parameterType="Map" resultMap="BaseResultMap">
+	    select id, rname ,sort
+		,parent_id ,url, loadfile, icon, update_user, update_time ,s_state from
+		sys_resource
+		where s_state !='0'
+	</select>
+	<!-- <select id="listMenusByPgenation" parameterType="Map" resultMap="BaseResultMap">
+	 select  * from (
+        select A.*,ROWNUM RN from
+         (
+         select id, rname ,sort
+		,parent_id ,url, loadfile, icon, update_user, update_time ,s_state from
+		sys_resource
+		where s_state !='0'
+                ) A where ROWNUM &lt;=#{showCount}
+        ) where RN &gt;#{beginCount}
+	</select> -->
+	
+	<select id="listMenus" resultMap="BaseResultMap">
+		select id, rname ,sort
+		,parent_id ,url, loadfile, icon, update_user, update_time ,s_state from
+		sys_resource
+		where s_state !='0' order by sort asc
+	</select>
+
+	<!-- 通过资源ID获取资源详情信息 -->
+	<select id="detaillistMenus" resultMap="detailResultMap">
+		select res.id, res.rname
+		,res.sort ,res.parent_id ,res.url, res.loadfile, res.icon,
+		res.update_user, res.update_time ,res.s_state,
+		op.id as op_id,op.name
+		from sys_resource res
+		left join sys_resource_oper reso on
+		res.id = reso.resource_id
+		left join sys_operate op on reso.oper_id
+		= op.id
+		where
+		res.id=#{menuId} and res.s_state !='0'
+	</select>
+
+	<!-- 获取资源详情信息 -->
+	<select id="detailAlllistMenus" resultMap="detailResultMap">
+		select res.id, res.rname
+		,res.sort ,res.parent_id ,res.url, res.loadfile, res.icon,
+		res.update_user, res.update_time ,res.s_state,
+		op.id as op_id,op.name
+		from sys_resource res
+		left join sys_resource_oper reso on
+		res.id = reso.resource_id
+		left join sys_operate op on reso.oper_id
+		= op.id 
+		where 
+		res.s_state !='0'
+		</select>
+
+	<!-- 通过用户ID数组获取资源详情信息 -->
+	<select id="detaillistUserMenusByUserId"  resultMap="detailUserMenuResultMap">
+		SELECT
+		userss.id as user_Id,
+		res.id as menu_Id,
+		res.rname ,
+		res.sort ,
+		res.parent_id ,
+		res.url,
+		res.loadfile,
+		res.icon,
+		res.update_user,
+		res.update_time ,
+		res.s_state,
+		op.id AS op_id,
+		op.name
+		FROM
+		jyspsc_sys_user userss
+		LEFT JOIN
+		sys_user_role ur
+		ON
+		ur.user_id = userss.id
+		LEFT JOIN
+		sys_role_resource rr
+		ON
+		rr.role_id = ur.role_id
+		RIGHT JOIN
+		sys_resource res
+		ON
+		res.id = rr.resource_id
+		LEFT JOIN
+		sys_operate op
+		ON
+		op.id = rr.opt_id
+		WHERE
+		userss.id in
+		 <foreach item="item" index="index" collection="list" 
+                         open="(" separator="," close=")">
+                        #{item}
+         </foreach>
+	</select>
+	
+	<!-- 通过用户ID获取资源详情信息 -->
+	<select id="detaillistMenusByUserId"  parameterType="String" resultMap="detailResultMap">
+		SELECT
+		res.id ,
+		res.rname ,
+		res.sort ,
+		res.parent_id ,
+		res.url,
+		res.loadfile,
+		res.icon,
+		res.update_user,
+		res.update_time ,
+		res.s_state,
+		op.id AS op_id,
+		op.name
+		FROM
+		jyspsc_sys_user userss
+		LEFT JOIN
+		sys_user_role ur
+		ON
+		ur.user_id = userss.id
+		LEFT JOIN
+		sys_role_resource rr
+		ON
+		rr.role_id = ur.role_id
+		RIGHT JOIN
+		sys_resource res
+		ON
+		res.id = rr.resource_id
+		LEFT JOIN
+		sys_operate op
+		ON
+		op.id = rr.opt_id
+		WHERE
+		userss.id = #{userId}
+	</select>
+
+	<!-- 通过资源父ID获取该父节点下的资源 -->
+	<select id="listMenusByPid" parameterType="String" resultMap="BaseResultMap">
+		select id, rname ,sort ,parent_id ,url, loadfile, icon, update_user,
+		update_time ,s_state from sys_resource where
+		parent_id=#{pId} and
+		s_state !='0'
+		order by sort
+	</select>
+	
+	<!-- 通过资源父ID获取该父节点下的资源 -分页查询-->
+	<select id="listMenusByPidPgenation" parameterType="Map" resultMap="BaseResultMap">
+        select id, rname ,sort ,parent_id ,url, loadfile, icon, update_user,
+		update_time ,s_state from sys_resource where
+		parent_id=#{pId} and
+		s_state !='0'
+		order by sort
+	</select>
+	<!-- <select id="listMenusByPidPgenation" parameterType="Map" resultMap="BaseResultMap">
+	 select  * from (
+        select A.*,ROWNUM RN from
+         (
+        select id, rname ,sort ,parent_id ,url, loadfile, icon, update_user,
+		update_time ,s_state from sys_resource where
+		parent_id=#{pId} and
+		s_state !='0'
+                ) A where ROWNUM &lt;=#{showCount}
+        ) where RN &gt;#{beginCount}
+	</select> -->
+
+	<!-- 查询所有操作列表 -->
+	<select id="listMenusOper" resultMap="operMap">
+		select id,name from
+		sys_operate
+	</select>
+	
+	<!-- 根据资源id查询对应的操作列表 -->
+	<select id="queryOptListByResourceId" parameterType="String" resultMap="operMap">
+		select ops.* from sys_operate ops 
+			left join sys_resource_oper ro on ops.id=ro.oper_id 
+			where ro.resource_id=#{resourceId} order by ops.id
+	</select>
+
+	<!-- 通过资源ID获取资源列表 -->
+	<select id="queryOneMenu" parameterType="String" resultMap="BaseResultMap">
+		select id, rname ,sort ,parent_id ,url, loadfile, icon, update_user,
+		update_time ,s_state from sys_resource where
+		id=#{menuId}
+	</select>
+
+	<!-- 通过资源ID获取资源和操作关系表数据 -->
+	<select id="listMenuOperByResourceId" parameterType="String"
+		resultMap="menuOper">
+		select id,resource_id,oper_id from sys_resource_oper
+		where
+		resource_id=#{resourceId}
+	</select>
+
+	<!-- 通过操作ID获取资源操作列表 -->
+	<select id="listOperbyOperId" parameterType="String" resultMap="operMap">
+		select id,name from sys_operate where
+		id=#{operId}
+	</select>
+
+	<!-- 通过资源ID获取资源操作列表 -->
+	<select id="listOperbyResourceId" parameterType="String"
+		resultMap="operMap">
+		select op.id,op.name from sys_operate op
+		left join
+		sys_resource_oper reso on op.id=reso.operId where
+		reso.resource_id=#{resourceId}
+	</select>
+
+	<!-- 通过资源Id更新资源 -->
+	<update id="updateResourceById" parameterType="com.cpiinfo.sysmgt.entity.Menu">
+		update
+		sys_resource set rname = #{rname} ,sort = #{sort},parent_id =
+		#{parentId},url = #{url}, loadfile = #{loadfile}, icon = #{icon},
+		update_user = #{updateUser}, update_time = #{updateTime},s_state =
+		#{state}
+		where id = #{id}
+	</update>
+
+	<!-- 通过资源ID删除资源，此处为逻辑删除，即state状态 0删除 1正常 -->
+	<update id="deleteResourceById" parameterType="String">
+		update
+		sys_resource set s_state = 0
+		where id = #{id}
+	</update>
+	<!-- 通过资源ID更新 -->
+	<update id="updateReOper" parameterType="java.util.List">
+		update sys_resource_oper
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			<set>
+				oper_id=#{item.operId}
+			</set>
+			where resource_id= #{item.resourceId}
+		</foreach>
+	</update>
+
+	<!-- 通过资源ID删除资源和操作关系表 -->
+	<delete id="deleteReOper" parameterType="String">
+		delete from
+		sys_resource_oper where
+		resource_id=#{resourceId}
+
+	</delete>
+	
+	<!-- 根据角色去重查询资源 -->
+	<select id="queryDistinctResourceByRole" parameterType="String" resultMap="BaseResultMap">
+		select distinct r.id, r.rname, r.sort, r.parent_id, r.url, r.loadfile,
+			r.icon, r.update_user, r.update_time, r.s_state  
+		from sys_resource r left join sys_role_resource rr 
+			on r.id = rr.resource_id left join sys_user_role ur 
+			on ur.role_id=rr.role_id 
+		where ur.user_id=#{userId}
+	</select>
+	
+	<!-- 根据资源ID和角色ID查询操作列表 -->
+	<select id="queryOperListByRoleAndResourceId" parameterType="Map" resultMap="operMap">
+		select o.id, o.name from sys_operate o 
+			left join sys_role_resource rr on o.id=rr.opt_id 
+		where rr.role_id=#{roleId} and rr.resource_id=#{resourceId}
+	</select>
+	
+	<!-- 查询主能源类型列表 -->
+	<select id="querySourceOpt" parameterType="String" resultMap="dictionaryMap">
+	  	select category_code, category_name, group_code from sys_dictionary where group_code = 'plate_type'
+	</select>
+	
+	<select id="getbasefun" resultType="com.cpiinfo.sysmgt.entity.ResourceVo">
+		select  id as cid,rname as cname,
+		0 as pid,url
+		from sys_resource where (parent_id='0' or parent_id is null) and s_state='1' order by sort asc
+	</select>
+	<select id="getbasefunBypid" parameterType="java.lang.String" resultType="com.cpiinfo.sysmgt.entity.ResourceVo">
+		select  id as cid,rname as cname,parent_id as pid,url
+		from sys_resource where parent_id=#{value} and s_state='1' order by sort asc
+	</select>
+	<select id="getbasefunByid" parameterType="java.lang.String" resultType="com.cpiinfo.sysmgt.entity.ResourceVo">
+		select  id as cid,rname as cname,parent_id as pid,url
+		from sys_resource where id=#{value} and s_state='1' order by sort asc
+	</select>
+	
+	<!-- 查询一般的人员资源权限 -->
+	<select id="getbasefunbyroleuser" parameterType="java.util.Map" 
+	resultType="com.cpiinfo.sysmgt.entity.ResourceVo">
+		select  id as cid,rname as cname,
+		0 as pid,url
+		from (select distinct b.* from sys_user_role  a
+				inner join sys_role_resource c on a.role_id=c.role_id
+				inner join sys_resource b on c.RESOURCE_ID=b.id and b.S_STATE='1'
+				where user_id=#{userId}) 
+		where (parent_id='0' or parent_id is null) and s_state='1' order by sort asc
+	</select>
+	<select id="getbasefunBypiduserid" parameterType="java.util.Map" 
+	resultType="com.cpiinfo.sysmgt.entity.ResourceVo">
+		select  id as cid,rname as cname,parent_id as pid,url
+		from (select distinct b.* from sys_user_role  a
+				inner join sys_role_resource c on a.role_id=c.role_id
+				inner join sys_resource b on c.RESOURCE_ID=b.id and b.S_STATE='1'
+				where user_id=#{userId})  
+		where parent_id=#{id} order by sort asc
+	</select>
+	<select id="getbasefunByiduser" parameterType="java.util.Map" 
+	resultType="com.cpiinfo.sysmgt.entity.ResourceVo">
+		select  id as cid,rname as cname,parent_id as pid,url
+		from (select distinct b.* from sys_user_role  a
+				inner join sys_role_resource c on a.role_id=c.role_id
+				inner join sys_resource b on c.RESOURCE_ID=b.id and b.S_STATE='1'
+				where user_id=#{userId})  
+		 where id=#{id} order by sort asc
+	</select>
+	
+	
+	
+		<!-- 查询一人员的资源 -->
+	<select id="getBaseFunByIdUserId" parameterType="java.util.Map" resultType="com.cpiinfo.sysmgt.entity.ResourceVo">
+		select  id as cid,rname as cname,
+		parent_id as pid,url
+		from (select distinct b.* from sys_user_role  a
+				inner join sys_role_resource c on a.role_id=c.role_id
+				inner join sys_resource b on c.RESOURCE_ID=b.id and b.s_state='1'
+				where user_id=#{userId} and b.id=#{id}) 
+		where s_state='1' order by sort asc
+	</select>
+		<!-- 查询一人员的资源子菜单 -->
+	<select id="getBaseFunByPidUserId" parameterType="java.util.Map" resultType="com.cpiinfo.sysmgt.entity.ResourceVo">
+		select  id as cid,rname as cname,
+		parent_id as pid,url
+		from (select distinct b.* from sys_user_role  a
+				inner join sys_role_resource c on a.role_id=c.role_id
+				inner join sys_resource b on c.RESOURCE_ID=b.id and b.s_state='1'
+				where user_id=#{userId} and b.parent_id=#{id}) 
+		where s_state='1' order by sort asc
+	</select>
+	
+	<select id="queryRecursionResource" parameterType="String" resultMap="BaseResultMap">
+	select * from sys_resource  
+	where res_path like '%${menuId}%'
+	</select>
+	
+	<select id="finddeptbyusercode" parameterType="java.lang.String" resultType="java.lang.String">
+		    select  
+		      t.ORG_CODE  as orgCode
+		  from sys_department t 
+		   inner join sys_depart_user tu on t.id=tu.depart_id
+		   inner join sys_user su on tu.user_id = su.id
+		   where su.user_code=#{value} and t.depart_status=0
+  </select>
+  
+   <!--  根据组织code查询上下递归权限-->
+  <select id="findOrgtreebycodes"  parameterType="java.util.Map"
+     resultType="com.cpiinfo.sysmgt.entity.ZNode">
+     select * from (
+  	 select   id as ids  ,ORG_CODE as id,PARENT_CODE as pId ,
+  	 SHORT_NAME as name,0 as qx,l_level as leveln,sort,
+  	 MAIN_INDUSTRY as cy,S_STATE as sta
+	  from sys_org a 
+	  where 1=1
+		  	<foreach item="item" index="index" collection="list"
+		      open="and (" separator="or" close=")">
+		        (org_path like '%${item}' and org_path not like '%${item}_%')
+		  </foreach>
+		  <if test="isTs != null and isTs == 'ts'">
+		     and  (a.is_ts = '1' or a.is_ts is null  or   a.is_ts = '') 
+		  </if>
+		  <if test="isTs == null or isTs == ''">
+		      and  (a.is_ts = '2' or a.is_ts is null  or   a.is_ts = '') 
+		  </if>
+	union
+		select  id as ids  ,ORG_CODE as id,PARENT_CODE as pId ,
+	  	 SHORT_NAME as name,1 as qx,l_level as leveln,sort,
+	  	 MAIN_INDUSTRY as cy,S_STATE as sta
+		  from sys_org a 
+		  where 1=1
+		  	<foreach item="item" index="index" collection="list"
+		       open="and (" separator="or" close=")">
+		        (org_path like '%${item}%')
+		  </foreach>
+		 <if test="isTs != null and isTs == 'ts'">
+		     and  (a.is_ts = '1' or a.is_ts is null  or   a.is_ts = '') 
+		  </if>
+		  <if test="isTs == null or isTs == ''">
+		      and  (a.is_ts = '2' or a.is_ts is null  or   a.is_ts = '') 
+		  </if>
+		  
+		 
+		) c where sta='1'  
+	<!-- 	<if test="unit!=null and unit=='no'">
+			 <![CDATA[
+			and leveln<>'6' 
+			 ]]>
+		</if> -->
+		 order by sort,id asc
+  </select>
+  
+  <select id="queryResourceByUrl" parameterType="String" resultMap="BaseResultMap">
+	select * from sys_resource where url = #{resUrl}
+  </select>
+  <select id="queryResourceByUserCode" resultMap="sysResourceResultMap">
+		select distinct sr.*, sro.role_code, sro.role_name from sys_resource sr
+		inner join sys_role_resource rr on rr.RESOURCE_ID = sr.id and sr.s_state='1'
+		inner join sys_user_role ur on rr.role_id = ur.role_id
+		inner join sys_user su on ur.user_id = su.id
+		inner join sys_role sro on rr.role_id = sro.role_id
+		<where>
+			<if test="userCode != null and userCode != ''">
+				and  su.user_code = #{userCode}
+			</if>
+			<if test="systemCodes != null and systemCodes.length > 0">
+				<foreach item="syscode" index="index" collection="systemCodes" open="and (" separator="or" close=")">
+					sr.system_code = #{syscode}
+				</foreach>
+			</if>
+			<if test="!includeButton">
+				and (sr.res_type is null or sr.res_type = '' or sr.res_type ='1')
+			</if>
+		</where>
+
+	</select>
+
+	<select id="getButtonByMenusUrl" resultMap="sysResourceResultMap">
+		  SELECT s.* from sys_resource s where  s.parent_id =(
+	select  sr.id from sys_resource sr
+		where sr.id = #{id} and sr.res_type='1')
+	</select>
+
+
+	<select id="getNameById" resultType="string">
+	SELECT rname FROM `sys_resource` WHERE id =#{id}
+	</select>
+
+	<select id="select1" resultMap="BaseResultMap">
+		select * from sys_resource
+		where s_state ='1' and res_type='1' order by sort asc
+	</select>
+
+	<select id="selectChildren" resultMap="BaseResultMap" parameterType="string">
+		select * from sys_resource
+		sys_resource
+		where s_state ='1' and parent_id=#{id} order by sort asc
+	</select>
+</mapper>

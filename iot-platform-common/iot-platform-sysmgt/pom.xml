@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.cpiinfo.iot</groupId>
+		<artifactId>iot-platform-common</artifactId>
+		<version>1.2.0</version>
+	</parent>
+	<artifactId>iot-platform-sysmgt</artifactId>
+	<version>${iot-platform.version}</version>
+
+	<name>iot-platform-sysmgt</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.cpiinfo.iot</groupId>
+			<artifactId>iot-platform-base</artifactId>
+			<version>${iot-platform.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.cpiinfo.iot</groupId>
+			<artifactId>iot-platform-sysmgt-api</artifactId>
+			<version>${iot-platform.version}</version>
+		</dependency>
+		<!--kafka消息的依赖-->
+
+		<dependency>
+			<groupId>com.cpiinfo.iot</groupId>
+			<artifactId>iot-platform-common-tools</artifactId>
+			<version>${iot-platform.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.cpiinfo.iot</groupId>
+			<artifactId>iot-platform-common-mybatis</artifactId>
+			<version>${iot-platform.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.cpiinfo.iot</groupId>
+			<artifactId>iot-platform-common-message-kafka</artifactId>
+			<version>${iot-platform.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+</project>

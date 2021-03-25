@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.cpiinfo.iot</groupId>
+		<artifactId>iot-platform-modules</artifactId>
+		<version>1.2.0</version>
+	</parent>
+	<artifactId>iot-platform-logdict</artifactId>
+	<name>iot-platform-logdict</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+	    <!--该依赖放在iot-platform-common-tools中引入-->
+        <dependency>
+            <groupId>com.cpiinfo.iot</groupId>
+            <artifactId>iot-platform-common-tools</artifactId>
+            <version>${iot-platform.version}</version>
+        </dependency>
+        <!--该依赖放在iot-platform-common-mybatis中引入-->
+        <dependency>
+            <groupId>com.cpiinfo.iot</groupId>
+            <artifactId>iot-platform-common-mybatis</artifactId>
+            <version>${iot-platform.version}</version>
+        </dependency>
+        <!--这里需要用到sw的注解，只在当前工程起作用-->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <scope>provided</scope>
+        </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+	</dependencies>
+	<build>
+
+		<resources>
+		<resource>
+			<filtering>false</filtering>
+			<directory>src/main/resources</directory>
+			<includes>
+				<include>**/*.xml</include>
+			</includes>
+		</resource>
+		</resources>
+	</build>
+</project>

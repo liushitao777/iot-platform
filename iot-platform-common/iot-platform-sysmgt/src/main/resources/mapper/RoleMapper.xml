@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cpiinfo.sysmgt.dao.RoleMapper">
+	<resultMap id="BaseResultMap" type="com.cpiinfo.sysmgt.entity.Role">
+		<result column="role_id" property="roleId" jdbcType="VARCHAR" />
+		<result column="role_code" property="roleCode" jdbcType="VARCHAR" />
+		<result column="role_name" property="roleName" jdbcType="VARCHAR" />
+		<result column="role_desc" property="roleDesc" jdbcType="VARCHAR" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="s_state" property="state" jdbcType="VARCHAR" />
+		<result column="root" property="root" jdbcType="VARCHAR" />
+		<result column="l_level" property="level" jdbcType="VARCHAR" />
+		<result column="unit" property="unit" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 根据角色id查询角色 -->
+	<select id="queryRoleByRoleId" parameterType="String" resultMap="BaseResultMap">
+		select role_id, role_code, role_name, role_desc, update_user, update_time, s_state,root,l_level,unit  from sys_role where role_id=#{role_id}
+	</select>
+	
+	<!-- 根据单位编码查询该单位下的所有角色 -->
+	<select id="listRoles" parameterType="Map" resultMap="BaseResultMap">
+		select role_id, role_code, role_name, role_desc, update_user, update_time, s_state 
+			from sys_role r where (
+				unit=#{unitCode}
+				or (unit in (select org_code from sys_org where parent_code=#{unitCode} )
+				and root ='1')) 
+				and s_state = 1 and role_name like '%${roleName}%'
+	</select>
+	<!-- <select id="listRoles" parameterType="Map" resultMap="BaseResultMap">
+	select * from (
+		select A.*,ROWNUM RN from
+		(
+		select role_id, role_name, role_desc, update_user, update_time, s_state 
+			from jyspsc_sys_role r where (
+				unit=#{unitCode}
+				or (unit in (select org_code from jyspsc_sys_org where parent_code=#{unitCode} )
+				and root ='1')) 
+				and s_state = 1 and role_name like '%${roleName}%' 
+		) A where ROWNUM &lt;=#{showCount}
+		) where RN &gt;#{beginCount}
+	</select> -->
+	
+	<!-- 根据单位编码查询该单位下的所有角色 -->
+	<select id="listRolesByOrgCode" parameterType="Map" resultMap="BaseResultMap">
+	select r.role_id, r.role_code, r.role_name, r.role_desc, r.update_user, r.update_time, r.s_state,o.SHORT_NAME,r.unit 
+		from sys_role r,sys_org o where 
+			r.unit in 
+	 		<foreach item="item" index="index" collection="unitCode" open="("  
+	            separator="," close=")">  
+	            #{item}  
+	        </foreach> 
+			and r.s_state = 1 and r.unit = o.ORG_CODE
+			<if test="roleName!=null and roleName!=''">
+			and r.role_name like '%${roleName}%'
+			</if>
+	</select>
+	<!-- <select id="listRolesByOrgCode" parameterType="Map" resultMap="BaseResultMap">
+	select * from (
+		select A.*,ROWNUM RN from
+		(
+		select r.role_id, r.role_name, r.role_desc, r.update_user, r.update_time, r.s_state,o.SHORT_NAME,r.unit 
+			from jyspsc_sys_role r,JYSPSC_SYS_ORG o where 
+				r.unit in 
+		 		<foreach item="item" index="index" collection="unitCode" open="("  
+		            separator="," close=")">  
+		            #{item}  
+		        </foreach> 
+				and r.s_state = 1 and r.unit = o.ORG_CODE
+				<if test="roleName!=null and roleName!=''">
+				and r.role_name like '%${roleName}%'
+				</if>
+		) A where ROWNUM &lt;=#{showCount}
+		) where RN &gt;#{beginCount}
+	</select> -->
+	
+	
+	<!-- 根据单位编码查询该单位下的角色总条数 -->
+	<select id="getRoleCount" parameterType="Map" resultType="int">
+			
+		select count(1) from sys_role r where (
+			unit=#{unitCode}
+			or (unit in (select org_code from sys_org where parent_code=#{unitCode} )
+			and root ='1')) 
+			and s_state = 1 and role_name like '%${roleName}%'
+	</select>
+	
+	<!-- 根据单位编码查询该单位下的角色总条数 -->
+	<select id="getRoleCountOrgCode" parameterType="Map" resultType="int">
+			
+		select count(1) from sys_role r where 
+			unit in 
+		 		<foreach item="item" index="index" collection="unitCode" open="("  
+		            separator="," close=")">  
+		            #{item}  
+		        </foreach> 
+			and s_state = 1 and role_name like '%${roleName}%'
+	</select>
+
+	<!-- 角色绑定资源, 角色和资源表  中插入数据 -->
+	<insert id="insertMenuByRoleId" parameterType="Map">
+		insert into sys_role_resource(id, role_id, resource_id, opt_id)
+			values(#{id}, #{role_id}, #{menu_id}, #{opt_id})
+	</insert>
+
+	<!-- 根据角色id删除 该角色拥有的资源 -->
+	<delete id="deleteMenusByRoleId" parameterType="String">
+		delete from sys_role_resource where role_id=#{role_id}
+	</delete>
+	
+	<!-- 根据员工id查询该员工所拥有的角色 -->
+	<select id="queryRolesByUserId" parameterType="String" resultMap="BaseResultMap">
+		select r.* from sys_role r left join sys_user_role ur on r.role_id=ur.role_Id where ur.user_id=#{userId}
+		<!-- select * from jyspsc_sys_user_role where user_id=#{userId}; -->
+	</select>
+	
+	<!-- 根据员工id查询该员工所拥有的角色 -->
+	<select id="queryRolesByUserCode" parameterType="String" resultMap="BaseResultMap">
+		select r.* from sys_role r 
+		inner join sys_user_role ur on r.role_id=ur.role_id
+		inner join sys_user su on ur.user_id = su.id 
+		where su.user_code=#{userCode}
+	</select>
+	
+	<!-- 创建角色 -->
+	<insert id="addRole" parameterType="com.cpiinfo.sysmgt.entity.Role">
+		insert into sys_role(role_id, role_code, role_name, role_desc, update_user, 
+			update_time, s_state, root, l_level, unit)
+		values(#{roleId}, #{roleCode}, #{roleName}, #{roleDesc}, #{updateUser}, #{updateTime},
+			1, #{root}, #{level}, #{unit})
+	</insert>
+
+	<!-- 修改角色 -->
+	<update id="updateRole" parameterType="com.cpiinfo.sysmgt.entity.Role">
+		update sys_role set
+		<if test="roleCode!=null">
+			role_code=#{roleCode},
+		</if>
+		<if test="updateUser!=null">
+			update_user=#{updateUser},
+		</if>
+		<if test="roleDesc!=null">
+			role_desc=#{roleDesc},
+		</if>
+		<if test="level!=null">
+			l_level=#{level},
+		</if>
+		<if test="level!=null">
+			l_level=#{level},
+		</if>
+		s_state=#{state},
+		role_name = #{roleName},
+		update_time = #{updateTime}
+		where role_id = #{roleId}
+	</update>
+	
+	<!-- 根据角色id查询角色 -->
+	<select id="queryRoleById" parameterType="String" resultMap="BaseResultMap">
+		select role_id, role_code, role_name, role_desc, update_user, 
+			update_time, s_state, root, l_level, unit 
+		from sys_role where role_id = #{roleId}
+	</select>
+	
+
+	<!-- 删除角色 -->
+	<delete id="delRoleById" parameterType="String">
+		delete from sys_role  where role_id =#{roleId}
+	</delete>
+	
+	<!-- 根据角色id删除  该所有员工的该角色 -->
+	<delete id="delUserAndRoleByRoleId" parameterType="String" >
+		delete from sys_user_role where role_id = #{roleId}
+	</delete>
+
+	<!-- 查询角色是否还存在有关联的用户 -->
+	<select id="findUserRole" parameterType="String" resultType="int">
+		select count(*)from sys_user_role where role_id = #{rId}
+	</select>
+	<!-- 查询单位下的所有角色 -->
+	<select id="queryRoleListByOrgCode" parameterType="String" resultMap="BaseResultMap">
+		select role_id, role_code, role_name, role_desc, update_user, 
+			update_time, s_state, root, l_level, unit 
+		from sys_role where unit = #{orgCode} and s_state = 1
+	</select>
+	<!-- 查询所有角色 -->
+	<select id="queryRoleList" resultMap="BaseResultMap">
+		select role_id, role_code, role_name, role_desc, update_user, 
+			update_time, s_state, root, l_level, unit 
+		from sys_role where s_state = 1
+	</select>
+	
+	<!-- 根据资源id删除 角色资源中单表数据 -->
+	<delete id="delRoleAndResourceByResourceId" parameterType="String">
+		delete from sys_role_resource where resource_id = #{resourceId}
+	</delete>
+	
+	
+	<select id="queryUserResourceOperations" resultType="string">
+		select rr.opt_id from sys_role_resource rr
+		inner join sys_user_role ur on ur.role_id = rr.role_id
+		inner join sys_user su on ur.user_id = su.id
+		where su.user_code = #{userCode} and rr.resource_id=#{resId}
+	</select>
+
+
+	<select id="pageRole" resultMap="BaseResultMap">
+		select role_id, role_code, role_name, role_desc, update_user,
+			update_time, s_state, root, l_level, unit
+		from sys_role
+		<where>
+			<if test="roleName != null">
+				and role_name like "%"#{roleName}"%"
+			</if>
+			and s_state ='1' and fixed_value='0'
+		</where>
+		order  by update_time desc
+	</select>
+	<select id="getResourcesLsit" resultType="string">
+		SELECT resource_id FROM `sys_role_resource` WHERE role_id =#{roleId};
+	</select>
+
+	<select id="countExist" parameterType="Map" resultType="int">
+		select count(*) from sys_role_resource where role_id=#{role_id} and resource_id=#{menu_id}
+	</select>
+
+
+
+	<select id="getParentResource" parameterType="string" resultType="string">
+		select parent_id from sys_resource where id=#{resourceId}
+	</select>
+</mapper>
