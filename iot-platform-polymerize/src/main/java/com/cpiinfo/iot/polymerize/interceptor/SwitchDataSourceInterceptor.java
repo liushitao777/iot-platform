@@ -42,7 +42,7 @@ public class SwitchDataSourceInterceptor extends GenericFilterBean implements Ha
     /**
      * 默认租户ID，用于在开发环境取得数据源，生产环境租户ID必须在登录时传入
      */
-    @Value("${iot.tenant.default-tenant:}")
+    @Value("${com.cpiinfo.iot.tenant.default-tenant:}")
     private String DEFAULT_TENANT_ID;
     
     @Value("${com.cpiinfo.iot.authnz.login-processing-url:/login}")
